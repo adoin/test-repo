@@ -1,0 +1,7 @@
+[patch]
+format = "mboxrd"
+binary = true
+
+[selection]
+mode = "exact"
+preserve_order = true
