@@ -5,5 +5,10 @@ This file exists for commit patch testing.
 ## Baseline
 
 - alpha
-- beta
+- beta updated by the third commit
 - gamma
+
+## Selection Cases
+
+- Select this commit by itself.
+- Select it together with the first and fourth commits.
