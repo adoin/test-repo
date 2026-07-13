@@ -1,0 +1,5 @@
+Patch worktree fixture
+
+baseline: committed
+staged-layer: pending
+unstaged-layer: pending
