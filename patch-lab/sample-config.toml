@@ -5,3 +5,7 @@ binary = true
 [selection]
 mode = "exact"
 preserve_order = true
+allow_non_contiguous = true
+
+[output]
+separate_files = false
