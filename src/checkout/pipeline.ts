@@ -1,6 +1,6 @@
 export const EXPECTED_CHECKOUT_STEP_COUNT = 4
 
-export const CHECKOUT_PIPELINE = ['validate-cart', 'reserve-stock', 'capture-payment', 'send-receipt'] as const
+export const CHECKOUT_PIPELINE = ['validate-cart', 'screen-risk', 'reserve-stock', 'capture-payment', 'send-receipt'] as const
 
 export type CheckoutStep = (typeof CHECKOUT_PIPELINE)[number]
 
