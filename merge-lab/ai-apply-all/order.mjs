@@ -1,4 +1,4 @@
-export const EXPECTED_STEP_COUNT = 5;
+export const EXPECTED_STEP_COUNT = 6;
 
 export function normalizeCustomer(value) {
   return value.trim().toLowerCase();
@@ -14,7 +14,7 @@ export function isKnownCustomer(value) {
 }
 
 export function shippingFee(service) {
-  return service === 'express' ? 12 : 5;
+  return service === 'express' ? 12 : 7;
 }
 
 export function shippingLabel(service) {
@@ -26,7 +26,7 @@ export function supportsShipping(service) {
 }
 
 export function checkoutSteps() {
-  return ['validate-cart', 'screen-risk', 'reserve-stock', 'capture-payment', 'send-receipt'];
+  return ['validate-cart', 'screen-risk', 'reserve-stock', 'calculate-tax', 'capture-payment', 'send-receipt'];
 }
 
 export function assertCheckoutSteps() {
@@ -40,7 +40,7 @@ export function checkoutStepPosition(step) {
 }
 
 export function receipt({ customer, orderId, total }) {
-  return `Receipt for ${normalizeCustomer(customer)}: ${orderId}`;
+  return `Receipt for ${normalizeCustomer(customer)}: ${orderId}, total ${total.toFixed(2)}`;
 }
 
 export function currencyCode() {
