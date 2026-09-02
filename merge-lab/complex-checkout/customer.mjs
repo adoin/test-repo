@@ -1,5 +1,5 @@
 export function normalizeCustomer(value) {
-  return value.trim();
+  return value.normalize('NFKC').trim().toLowerCase();
 }
 
 export function validateCustomer(value) {
@@ -9,7 +9,7 @@ export function validateCustomer(value) {
 }
 
 export function customerKey(value) {
-  return normalizeCustomer(value);
+  return `customer:${normalizeCustomer(value)}`;
 }
 
 export function customerTier(input) {
@@ -21,5 +21,7 @@ export function isPreferredCustomer(input) {
 }
 
 export function receiptCustomer(value, locale = 'en') {
-  return normalizeCustomer(value);
+  const customer = normalizeCustomer(value);
+  const [name, domain] = customer.split('@');
+  return domain ? `${name.slice(0, 1)}***@${domain}` : customer;
 }

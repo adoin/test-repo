@@ -1,8 +1,8 @@
 import { normalizeCustomer, validateCustomer, customerKey, receiptCustomer } from './customer.mjs';
 import { quoteOrder, formatAmount, supportsShipping } from './pricing.mjs';
-import { chargePayment } from './legacy-payment.mjs';
+import { capturePayment } from './payments.mjs';
 
-export const EXPECTED_STEP_COUNT = 4;
+export const EXPECTED_STEP_COUNT = 5;
 
 export function validateCart(input) {
   validateCustomer(input.customer);
@@ -20,7 +20,7 @@ export function validateCart(input) {
 }
 
 export function checkoutSteps() {
-  return ['validate-cart', 'reserve-stock', 'capture-payment', 'send-receipt'];
+  return ['validate-cart', 'screen-risk', 'reserve-stock', 'capture-payment', 'send-receipt'];
 }
 
 export function checkoutStepPosition(step) {
@@ -34,7 +34,7 @@ export function assertCheckoutSteps() {
 }
 
 export function buildContext(input) {
-  return { orderId: input.id, customer: normalizeCustomer(input.customer), currency: 'USD' };
+  return { orderId: input.id, customer: normalizeCustomer(input.customer), customerId: customerKey(input.customer), currency: 'USD' };
 }
 
 export function cartSummary(input) {
@@ -46,7 +46,7 @@ export function itemCount(input) {
 }
 
 export function reviewBeforePayment(input) {
-  return true;
+  return input.flagged !== true;
 }
 
 export function rejectionMessage() {
@@ -58,7 +58,7 @@ export function receiptPrefix() {
 }
 
 export function paymentRequest(input, context, quote) {
-  return { orderId: input.id, amount: quote.total, currency: context.currency };
+  return { orderId: input.id, amountMinor: Math.round(quote.total * 100), currency: context.currency, idempotencyKey: `${context.customerId}:${input.id}` };
 }
 
 export function isPaid(payment) {
@@ -66,7 +66,7 @@ export function isPaid(payment) {
 }
 
 export function formatReceipt(input, context, quote, payment) {
-  return `Order ${input.id}: ${formatAmount(quote.total, context.currency)}`;
+  return `Receipt for ${receiptCustomer(input.customer)} | Order ${input.id} | ${formatAmount(quote.total, context.currency)}`;
 }
 
 export function checkout(input) {
@@ -75,6 +75,6 @@ export function checkout(input) {
   const context = buildContext(input);
   const quote = quoteOrder(input);
   if (!reviewBeforePayment(input)) throw new Error(rejectionMessage());
-  const payment = chargePayment(paymentRequest(input, context, quote));
+  const payment = capturePayment(paymentRequest(input, context, quote));
   return { context, quote, payment, receipt: formatReceipt(input, context, quote, payment) };
 }

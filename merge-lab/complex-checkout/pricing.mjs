@@ -7,7 +7,7 @@ export function subtotalFor(items) {
 }
 
 export function discountFor(input, subtotal) {
-  return 0;
+  return input.tier === 'gold' ? roundMoney(subtotal * 0.1) : 0;
 }
 
 export function taxableAmount(subtotal, discount) {
@@ -19,6 +19,7 @@ export function supportsShipping(service) {
 }
 
 export function shippingFee(service, subtotal) {
+  if (subtotal >= 80) return 0;
   return service === 'express' ? 12 : 5;
 }
 
@@ -31,7 +32,7 @@ export function formatAmount(value, currency) {
 }
 
 export function taxFee(amount, region) {
-  return 0;
+  return region === 'EU' ? roundMoney(amount * 0.2) : 0;
 }
 
 export function quoteOrder(input) {
