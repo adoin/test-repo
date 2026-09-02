@@ -1,8 +1,8 @@
 # AI 合并建议：全部应用测试现场
 
-这是 `test-repo` 的独立 Git worktree，原目录中未完成的合并保持不动。
+直接使用 Git Agent 专用测试仓库 `test-repo`，不需要另外打开工作区。
 
-- 工作区：`D:\workspace\test-repo-ai-apply-all`
+- 工作区：`D:\workspace\test-repo`
 - 基线分支：`codex/ai-apply-all-base`
 - 当前/左侧分支：`codex/ai-apply-all-left`
 - 待合并/右侧分支：`codex/ai-apply-all-right`
