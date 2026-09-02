@@ -1,7 +1,7 @@
-export const EXPECTED_STEP_COUNT = 4;
+export const EXPECTED_STEP_COUNT = 5;
 
 export function normalizeCustomer(value) {
-  return value;
+  return value.trim().toLowerCase();
 }
 
 // Keep the independent business rules separated so Git produces distinct hunks.
@@ -14,7 +14,7 @@ export function isKnownCustomer(value) {
 }
 
 export function shippingFee(service) {
-  return 5;
+  return service === 'express' ? 12 : 5;
 }
 
 export function shippingLabel(service) {
@@ -26,7 +26,7 @@ export function supportsShipping(service) {
 }
 
 export function checkoutSteps() {
-  return ['validate-cart', 'reserve-stock', 'capture-payment', 'send-receipt'];
+  return ['validate-cart', 'screen-risk', 'reserve-stock', 'capture-payment', 'send-receipt'];
 }
 
 export function assertCheckoutSteps() {
@@ -40,7 +40,7 @@ export function checkoutStepPosition(step) {
 }
 
 export function receipt({ customer, orderId, total }) {
-  return `Receipt: ${orderId}`;
+  return `Receipt for ${normalizeCustomer(customer)}: ${orderId}`;
 }
 
 export function currencyCode() {
@@ -49,8 +49,4 @@ export function currencyCode() {
 
 export function receiptPrefix() {
   return 'Receipt';
-}
-
-export function legacyReceiptLabel() {
-  return 'Old receipt';
 }
