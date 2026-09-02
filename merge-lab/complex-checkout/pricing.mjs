@@ -7,7 +7,7 @@ export function subtotalFor(items) {
 }
 
 export function discountFor(input, subtotal) {
-  return 0;
+  return input.coupon === 'WELCOME5' ? Math.min(5, subtotal) : 0;
 }
 
 export function taxableAmount(subtotal, discount) {
@@ -19,7 +19,7 @@ export function supportsShipping(service) {
 }
 
 export function shippingFee(service, subtotal) {
-  return service === 'express' ? 12 : 5;
+  return service === 'express' ? 15 : 7;
 }
 
 export function shippingLabel(service) {
@@ -31,7 +31,7 @@ export function formatAmount(value, currency) {
 }
 
 export function taxFee(amount, region) {
-  return 0;
+  return region === 'US' ? roundMoney(amount * 0.08) : 0;
 }
 
 export function quoteOrder(input) {

@@ -1,8 +1,9 @@
 import { normalizeCustomer, validateCustomer, customerKey, receiptCustomer } from './customer.mjs';
 import { quoteOrder, formatAmount, supportsShipping } from './pricing.mjs';
 import { chargePayment } from './legacy-payment.mjs';
+import { recordPaymentAudit } from './audit.mjs';
 
-export const EXPECTED_STEP_COUNT = 4;
+export const EXPECTED_STEP_COUNT = 6;
 
 export function validateCart(input) {
   validateCustomer(input.customer);
@@ -20,7 +21,7 @@ export function validateCart(input) {
 }
 
 export function checkoutSteps() {
-  return ['validate-cart', 'reserve-stock', 'capture-payment', 'send-receipt'];
+  return ['validate-cart', 'reserve-stock', 'calculate-tax', 'capture-payment', 'persist-audit', 'send-receipt'];
 }
 
 export function checkoutStepPosition(step) {
@@ -34,7 +35,7 @@ export function assertCheckoutSteps() {
 }
 
 export function buildContext(input) {
-  return { orderId: input.id, customer: normalizeCustomer(input.customer), currency: 'USD' };
+  return { orderId: input.id, customer: normalizeCustomer(input.customer), currency: input.currency ?? 'USD', locale: input.locale ?? 'en', traceId: `trace:${input.id}` };
 }
 
 export function cartSummary(input) {
@@ -46,7 +47,7 @@ export function itemCount(input) {
 }
 
 export function reviewBeforePayment(input) {
-  return true;
+  return (input.availableStock ?? Infinity) >= itemCount(input);
 }
 
 export function rejectionMessage() {
@@ -58,15 +59,15 @@ export function receiptPrefix() {
 }
 
 export function paymentRequest(input, context, quote) {
-  return { orderId: input.id, amount: quote.total, currency: context.currency };
+  return { orderId: input.id, amount: quote.total, currency: context.currency, simulatedFailures: input.simulatedFailures ?? 0, traceId: context.traceId };
 }
 
 export function isPaid(payment) {
   return payment.paid === true && typeof payment.paymentId === 'string';
 }
 
-export function formatReceipt(input, context, quote, payment) {
-  return `Order ${input.id}: ${formatAmount(quote.total, context.currency)}`;
+export function formatReceipt(input, context, quote, payment, audit) {
+  return `Order ${input.id} | ${receiptCustomer(input.customer, context.locale)} | ${formatAmount(quote.total, context.currency)} | Audit ${audit.id}`;
 }
 
 export function checkout(input) {
@@ -76,5 +77,6 @@ export function checkout(input) {
   const quote = quoteOrder(input);
   if (!reviewBeforePayment(input)) throw new Error(rejectionMessage());
   const payment = chargePayment(paymentRequest(input, context, quote));
-  return { context, quote, payment, receipt: formatReceipt(input, context, quote, payment) };
+  const audit = recordPaymentAudit(context, quote, payment);
+  return { context, quote, payment, audit, receipt: formatReceipt(input, context, quote, payment, audit) };
 }

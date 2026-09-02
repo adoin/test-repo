@@ -1,5 +1,5 @@
 export function normalizeCustomer(value) {
-  return value.trim();
+  return value.trim().replace(/\s+/g, ' ');
 }
 
 export function validateCustomer(value) {
@@ -9,7 +9,7 @@ export function validateCustomer(value) {
 }
 
 export function customerKey(value) {
-  return normalizeCustomer(value);
+  return `customer:${normalizeCustomer(value).replace(/\s/g, '-')}`;
 }
 
 export function customerTier(input) {
@@ -21,5 +21,5 @@ export function isPreferredCustomer(input) {
 }
 
 export function receiptCustomer(value, locale = 'en') {
-  return normalizeCustomer(value);
+  return `${normalizeCustomer(value)} (${locale})`;
 }
