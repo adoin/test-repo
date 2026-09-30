@@ -1,2 +1,2 @@
-﻿shared line from main branch
+shared line changed differently by the PR head fixture
 main keeps this file
