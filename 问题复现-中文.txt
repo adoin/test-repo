@@ -1,0 +1,1 @@
+Git Agent issue #3: non-ASCII path reproduction fixture.
